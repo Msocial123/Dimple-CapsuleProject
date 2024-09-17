@@ -1,0 +1,71 @@
+---
+- hosts: webservers
+  user: ansible
+  become: yes
+  connection: ssh
+
+  tasks:
+    - name: Install required packages for Node.js application
+      yum:
+        name:
+          - httpd     # Apache web server (optional)
+          - nodejs    # Node.js
+          - npm       # Node.js package manager
+          - mongodb   # MongoDB
+        state: present
+
+    - name: Start the Apache web server
+      service:
+        name: httpd
+        state: started
+
+    - name: Start the MongoDB service
+      service:
+        name: mongod
+        state: started
+
+    - name: Clone the Node.js application from Git (or copy local files)
+      git:
+        repo: 'https://github.com/Dimpleabhisri/Dimple-CapsuleProject.git'
+        dest: /var/www/nodeapp
+        version: master
+
+    - name: Install Node.js dependencies for the application
+      command: npm install
+      args:
+        chdir: /var/www/nodeapp
+
+    - name: Create environment file
+      copy:
+        dest: /var/www/nodeapp/.env
+        content: |
+          PORT=3015
+          MONGO_URI=mongodb://localhost:27017/AFF-Docker
+          SESSION_SECRET=your-secret-key
+
+    - name: Ensure the Node.js application is running
+      command: node app.js
+      args:
+        chdir: /var/www/nodeapp
+      async: 500
+      poll: 0
+
+    - name: Ensure Node.js app is started using PM2 (Optional for production)
+      npm:
+        name: pm2
+        global: yes
+      register: pm2_installed
+
+    - name: Start Node.js app with PM2
+      command: pm2 start app.js
+      args:
+        chdir: /var/www/nodeapp
+      when: pm2_installed.changed
+
+    - name: Enable PM2 startup on reboot
+      command: pm2 startup
+      when: pm2_installed.changed
+
+    - name: Save PM2 process list for startup
+      command: pm2 save
+      when: pm2_installed.changed

@@ -103,6 +103,13 @@ footer {
 }
  
     </style>
+   <script>
+    function showAlert() {
+        alert("Thanks for contacting us!");
+        document.getElementById("contactForm").reset(); // Reset the form fields
+        return false; // Prevents the form from submitting
+    }
+    </script>
 </head>
 <body>
     <header>
@@ -166,22 +173,24 @@ footer {
         <h1>To customize</h1>
         <p>Reach our store at Navi Mumbai <br> or <br> Choose customize option in the <a href="/dashboard">dashboard</a>
             </p>
-    </section>
-    <section id="contact">
-        <h2>Contact Us</h2>
-        <form action="#" >
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
+            <section id="contact">
+                <h2>Contact Us</h2>
+                <form action="#" onsubmit="return showAlert()">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="4" required></textarea>
+                    
+                    <button type="submit">Submit</button>
+                </form>
+            </section>
             
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
             
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" rows="4" required></textarea>
             
-            <button type="submit">Submit</button>
-        </form>
-    </section>
 
     <footer>
         <p>&copy; 2024 Flower Shop. All rights reserved.</p>
